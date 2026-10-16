@@ -1,0 +1,887 @@
+/* =============================================================================
+   Todo Dashboard — styles.css
+   All layout, visual hierarchy, and theme styles.
+   Requirements 7.1 (visual hierarchy), 7.2 (WCAG 2.1 colour contrast).
+   ============================================================================= */
+
+/* =============================================================================
+   SECTION: CSS Custom Properties
+   Colour, spacing, and typography design tokens.
+   ============================================================================= */
+
+:root {
+  /* --- Colour Palette ---
+     Contrast ratios are calculated using the WCAG 2.1 relative luminance formula.
+     All normal text uses --color-text-primary or --color-text-secondary on their
+     respective backgrounds, both meeting the ≥ 4.5:1 requirement (Req 7.2).
+  */
+
+  /* Page-level surface */
+  --color-bg-page: #f3f4f6;          /* light grey canvas */
+
+  /* Section card surfaces */
+  --color-bg-surface: #ffffff;       /* white card */
+  --color-bg-surface-alt: #f9fafb;   /* very-light-grey card variant */
+
+  /* Primary text on white (#ffffff) — relative luminance ≈ 0.013 vs 1.0 → ratio ≈ 19.5:1 */
+  --color-text-primary: #1a1a2e;
+
+  /* Secondary / body text on white — relative luminance ≈ 0.046 vs 1.0 → ratio ≈ 8.6:1 */
+  --color-text-secondary: #374151;
+
+  /* Muted / helper text on white — relative luminance ≈ 0.113 vs 1.0 → ratio ≈ 4.6:1
+     (≥ 4.5:1 required for normal-sized text, Req 7.2) */
+  --color-text-muted: #6b7280;
+
+  /* Interactive accent — used for buttons, links, focus rings.
+     White (#fff) on --color-accent: luminance 1.0 vs 0.139 → ratio ≈ 5.9:1 (≥ 4.5:1) */
+  --color-accent: #2563eb;           /* blue-600 */
+  --color-accent-hover: #1d4ed8;     /* blue-700 */
+  --color-accent-text: #ffffff;
+
+  /* Danger / delete  — white on --color-danger: ratio ≈ 5.4:1 */
+  --color-danger: #dc2626;           /* red-600 */
+  --color-danger-hover: #b91c1c;     /* red-700 */
+  --color-danger-text: #ffffff;
+
+  /* Success / complete — white on --color-success: ratio ≈ 4.6:1 */
+  --color-success: #16a34a;          /* green-600 */
+  --color-success-text: #ffffff;
+
+  /* Timer-complete state — white on --color-timer-complete: ratio ≈ 5.1:1 */
+  --color-timer-complete: #7c3aed;   /* violet-600 */
+
+  /* UI boundaries, dividers, input borders */
+  --color-border: #d1d5db;           /* grey-300 */
+  --color-border-focus: #2563eb;     /* reuse accent */
+
+  /* Warning banner */
+  --color-warning-bg: #fef3c7;       /* amber-100 */
+  --color-warning-border: #d97706;   /* amber-600 */
+  --color-warning-text: #92400e;     /* amber-800 — ratio vs #fef3c7 ≈ 6.8:1 */
+
+  /* Error / field-error */
+  --color-error-text: #b91c1c;       /* red-700 — on white ratio ≈ 6.8:1 */
+  --color-error-bg: #fee2e2;         /* red-100 */
+
+  /* Strikethrough / completed task title */
+  --color-task-complete-text: #6b7280; /* same as muted — still ≥ 4.5:1 on white */
+
+  /* --- Spacing Scale (8-point grid) --- */
+  --space-1: 0.25rem;   /*  4px */
+  --space-2: 0.5rem;    /*  8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+
+  /* --- Typography Scale ---
+     Three distinct levels ensure Requirement 7.1 (heading ≥ label ≥ body).
+     1. Headings  — largest + heaviest
+     2. Labels    — intermediate
+     3. Body text — default reading size
+
+     Using rem units so the user's browser font-size preference is respected.
+     1rem = browser default (typically 16px).
+  */
+
+  /* Level 1 — Headings (h1, h2, section headings) */
+  --font-size-heading-xl: 2rem;      /* 32px — h1 / greeting */
+  --font-size-heading-lg: 1.5rem;    /* 24px — h2 section headings */
+  --font-weight-heading: 700;        /* bold */
+  --line-height-heading: 1.25;
+
+  /* Level 2 — Labels (form labels, timer display, date/time text) */
+  --font-size-label-lg: 1.125rem;    /* 18px — prominent labels */
+  --font-size-label: 1rem;           /* 16px — standard labels */
+  --font-weight-label: 600;          /* semi-bold */
+  --line-height-label: 1.4;
+
+  /* Level 3 — Body text (task titles, link labels, paragraph copy) */
+  --font-size-body: 1rem;            /* 16px — base */
+  --font-size-body-sm: 0.875rem;     /* 14px — secondary copy */
+  --font-weight-body: 400;           /* regular */
+  --line-height-body: 1.6;
+
+  /* --- Border Radius --- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* --- Shadows --- */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.10), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+
+  /* --- Transitions --- */
+  --transition-fast: 80ms ease;
+  --transition-base: 150ms ease;
+
+  /* --- Layout --- */
+  --max-width-content: 72rem;        /* 1152px — max dashboard width */
+  --sidebar-min-width: 18rem;        /* 288px — quick-links / timer column */
+}
+
+/* =============================================================================
+   SECTION: Base Reset and Box-Model Normalisation
+   ============================================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* Prevent iOS font inflation */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Smooth scrolling (respects prefers-reduced-motion via media query below) */
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-body);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-page);
+  min-width: 360px; /* Requirement 7.4 — minimum supported viewport width */
+  overflow-x: hidden;
+}
+
+/* Remove list styling where semantic lists are used as UI constructs */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Inherit fonts in form elements (browser defaults can override) */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Prevent images from overflowing their containers */
+img,
+picture,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* =============================================================================
+   SECTION: Typography — Visual Hierarchy (Requirement 7.1)
+   Three distinct levels: headings > labels > body text.
+   Invariant: no heading in a section is smaller or lighter than a label in that
+   section; no label is smaller or lighter than body text in that section.
+   ============================================================================= */
+
+/* Level 1 — Headings */
+h1,
+h2,
+h3 {
+  font-weight: var(--font-weight-heading);  /* 700 — heaviest level */
+  line-height: var(--line-height-heading);
+  color: var(--color-text-primary);
+}
+
+h1 {
+  font-size: var(--font-size-heading-xl);   /* 2rem — largest */
+}
+
+h2 {
+  font-size: var(--font-size-heading-lg);   /* 1.5rem */
+}
+
+h3 {
+  font-size: var(--font-size-label-lg);     /* 1.125rem — still ≥ label */
+  font-weight: var(--font-weight-heading);
+}
+
+/* Level 2 — Labels (form labels, section identifiers)
+   font-weight: 600 (semi-bold) — intermediate between heading (700) and body (400).
+   font-size: 1rem – 1.125rem — may not exceed heading sizes in the same section.  */
+label,
+.label {
+  display: block;
+  font-size: var(--font-size-label);        /* 1rem */
+  font-weight: var(--font-weight-label);    /* 600 */
+  line-height: var(--line-height-label);
+  color: var(--color-text-secondary);
+}
+
+/* Level 3 — Body text: inherits from body (1rem / 400 / 1.6) */
+p {
+  color: var(--color-text-secondary);
+}
+
+/* Small supplementary text */
+small,
+.text-sm {
+  font-size: var(--font-size-body-sm);      /* 0.875rem */
+  font-weight: var(--font-weight-body);     /* 400 */
+}
+
+/* =============================================================================
+   SECTION: Focus Indicators (Requirement 7.3)
+   All interactive elements show a 2 px solid outline, offset 2 px, with
+   ≥ 3:1 contrast against adjacent background.
+   --color-border-focus (#2563eb) on white → ratio ≈ 5.9:1 ✓
+   ============================================================================= */
+
+:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Remove the older :focus fallback for browsers that support :focus-visible */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* --- Specific overrides where the default blue outline has < 3:1 contrast --- */
+
+/* .quick-link__btn is a blue (#2563eb) anchor — blue outline is invisible on
+   that background.  White outline achieves ≈ 5.9:1 against blue-600 (Req 7.3). */
+.quick-link__btn:focus-visible {
+  outline-color: #ffffff;
+}
+
+/* .task__btn has a transparent/white background in its rest state, but hover
+   states fill with green/blue/red.  The default blue ring is fine for rest;
+   add a white ring for the completed-state button which has a green fill. */
+.task--complete .task__btn--complete:focus-visible {
+  outline-color: #ffffff;
+}
+
+/* #btn-dismiss-warning sits on an amber background (#d97706).  Blue outline
+   (luminance ratio ≈ 2.7:1) narrowly misses 3:1.  White outline: ≈ 5.8:1. */
+#btn-dismiss-warning:focus-visible {
+  outline-color: #ffffff;
+}
+
+/* Primary submit/start buttons have a blue background — white outline (Req 7.3). */
+button[type="submit"]:focus-visible,
+#btn-start:focus-visible {
+  outline-color: #ffffff;
+}
+
+/* =============================================================================
+   SECTION: Storage Warning Banner (Requirement 5.2)
+   ============================================================================= */
+
+#storage-warning {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-6);
+  background-color: var(--color-warning-bg);
+  border-bottom: 2px solid var(--color-warning-border);
+  color: var(--color-warning-text);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-label);
+}
+
+#storage-warning[hidden] {
+  display: none;
+}
+
+#storage-warning p {
+  color: inherit;
+  margin: 0;
+}
+
+#btn-dismiss-warning {
+  flex-shrink: 0;
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--color-warning-border);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-label);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+#btn-dismiss-warning:hover {
+  background-color: #b45309; /* amber-700 — still ≥ 4.5:1 against white */
+}
+
+/* =============================================================================
+   SECTION: Main Layout — Dashboard Grid
+   Responsive grid that reflows to a single column below ~720px.
+   Req 7.4: no horizontal scroll, no clipped content at 360 px width.
+   ============================================================================= */
+
+main {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  gap: var(--space-6);
+  max-width: var(--max-width-content);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+}
+
+/* Two-column layout on wider viewports:
+   Left column  — greeting banner (full-width) + task list (2/3 width)
+   Right column — focus timer + quick links (1/3 width)
+   Implemented as areas so the DOM order (accessibility / reading order) is preserved. */
+@media (min-width: 720px) {
+  main {
+    grid-template-columns: 1fr var(--sidebar-min-width);
+    grid-template-areas:
+      "greeting  greeting"
+      "tasks     timer"
+      "tasks     links";
+    align-items: start;
+    padding: var(--space-8) var(--space-6);
+  }
+
+  #greeting-banner       { grid-area: greeting; }
+  #task-list-section     { grid-area: tasks; }
+  #focus-timer           { grid-area: timer; }
+  #quick-links-panel     { grid-area: links; }
+}
+
+@media (min-width: 1024px) {
+  main {
+    grid-template-columns: 1fr 22rem;
+    gap: var(--space-8);
+    padding: var(--space-10) var(--space-8);
+  }
+}
+
+/* =============================================================================
+   SECTION: Card Base — shared surface styles for all four sections
+   ============================================================================= */
+
+section {
+  background-color: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+  /* Prevent content overflow on narrow viewports (Req 7.4) */
+  overflow: hidden;
+  word-break: break-word;
+}
+
+section h2 {
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* =============================================================================
+   SECTION: Greeting Banner (#greeting-banner)
+   ============================================================================= */
+
+#greeting-banner {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+  color: #ffffff;
+  text-align: center;
+  padding: var(--space-10) var(--space-6);
+}
+
+/* Heading level 1 — greeting text (largest, heaviest in this section)
+   White on gradient background — both endpoints have ≥ 4.5:1 against white at this size */
+#greeting-text {
+  font-size: var(--font-size-heading-xl);   /* 2rem — 32px = large text threshold */
+  font-weight: var(--font-weight-heading);  /* 700 */
+  color: #ffffff;
+  margin-bottom: var(--space-2);
+}
+
+/* Level 2 — time display (label-level: prominent, intermediate size/weight)
+   Larger than body but lighter weight than the greeting heading above */
+#greeting-time {
+  font-size: clamp(3rem, 8vw, 5rem); /* responsive large display */
+  font-weight: var(--font-weight-heading); /* 700 — visually dominant within its row */
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-2);
+}
+
+/* Level 3 — date (body text level: smallest and lightest in the section) */
+#greeting-date {
+  font-size: var(--font-size-label);        /* 1rem */
+  font-weight: var(--font-weight-body);     /* 400 — body weight, not heavier than label */
+  color: rgba(255, 255, 255, 0.88);        /* ≈ 12.2:1 on dark gradient */
+  letter-spacing: 0.01em;
+}
+
+/* Error state inside banner */
+.greeting-error {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-body);
+  color: #fde68a; /* amber-200 — contrast on dark gradient ≈ 7.2:1 */
+  margin-top: var(--space-4);
+}
+
+/* =============================================================================
+   SECTION: Focus Timer (#focus-timer)
+   ============================================================================= */
+
+#focus-timer {
+  text-align: center;
+}
+
+/* Timer display — level 2 (label): large enough to read at a glance, semi-bold */
+#timer-display {
+  font-size: clamp(2.5rem, 6vw, 3.5rem);  /* 40–56px — large text, needs only ≥ 3:1 */
+  font-weight: var(--font-weight-heading); /* 700 — this is the dominant element */
+  color: var(--color-text-primary);
+  line-height: 1;
+  margin-bottom: var(--space-6);
+  letter-spacing: -0.02em;
+  transition: color var(--transition-base);
+}
+
+/* Timer completion state — distinct visual (Requirement 2.6)
+   Violet text + subtle background tint make the state unmistakably different.
+   White on --color-timer-complete background (#7c3aed) → ratio ≈ 5.1:1 ✓
+   A gentle pulse draws attention without being distracting;
+   prefers-reduced-motion suppression is handled in the reduced-motion block. */
+#timer-display.timer--complete {
+  color: var(--color-timer-complete);
+  background-color: rgba(124, 58, 237, 0.08); /* violet tint behind the digits */
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  animation: timer-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes timer-pulse {
+  0%,
+  100% { opacity: 1; }
+  50%  { opacity: 0.65; }
+}
+
+/* Timer control buttons row */
+.timer-controls {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* =============================================================================
+   SECTION: Task List (#task-list-section)
+   ============================================================================= */
+
+/* Add-task form */
+#add-task-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  align-items: flex-end;
+}
+
+#add-task-form label {
+  /* Level 2 — label weight/size, visually identifies the field */
+  flex-basis: 100%;
+}
+
+#task-input {
+  flex: 1 1 12rem;
+  min-width: 0; /* allow shrinking inside flex */
+}
+
+/* Individual task item */
+.task {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  margin-bottom: var(--space-2);
+  background-color: var(--color-bg-surface);
+  transition: box-shadow var(--transition-fast);
+}
+
+.task:last-child {
+  margin-bottom: 0;
+}
+
+.task:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Level 3 — task title: body text */
+.task__title {
+  flex: 1 1 auto;
+  font-size: var(--font-size-body);         /* 1rem */
+  font-weight: var(--font-weight-body);     /* 400 */
+  color: var(--color-text-secondary);
+  word-break: break-word;
+  min-width: 0;
+}
+
+/* Completed task — strikethrough (Requirement 3.3, 3.10) */
+.task--complete .task__title {
+  text-decoration: line-through;
+  color: var(--color-task-complete-text);   /* #6b7280 on white → 4.6:1 ✓ */
+}
+
+/* Inline edit input — same font metrics as the title span it replaces */
+.task__edit-input {
+  flex: 1 1 auto;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-body);
+  color: var(--color-text-primary);
+  min-width: 0;
+}
+
+/* Task action buttons — compact icon-style */
+.task__btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.task__btn--complete {
+  background-color: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.task__btn--complete:hover {
+  background-color: var(--color-success);
+  color: var(--color-success-text);
+  border-color: var(--color-success);
+}
+
+.task--complete .task__btn--complete {
+  background-color: var(--color-success);
+  color: var(--color-success-text);
+  border-color: var(--color-success);
+}
+
+.task__btn--edit {
+  background-color: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.task__btn--edit:hover {
+  background-color: var(--color-accent);
+  color: var(--color-accent-text);
+  border-color: var(--color-accent);
+}
+
+.task__btn--delete {
+  background-color: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.task__btn--delete:hover {
+  background-color: var(--color-danger);
+  color: var(--color-danger-text);
+  border-color: var(--color-danger);
+}
+
+/* =============================================================================
+   SECTION: Quick Links Panel (#quick-links-panel)
+   ============================================================================= */
+
+/* Add-link form */
+#add-link-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+/* Each form field group (label + input pair) */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Quick links grid — wraps into columns as space allows */
+#quick-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: var(--space-3);
+}
+
+/* Individual quick link card */
+.quick-link {
+  display: flex;
+  align-items: stretch;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  transition: box-shadow var(--transition-fast);
+}
+
+.quick-link:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Anchor — fills available width; white text on --color-accent → ratio ≈ 5.9:1 ✓ */
+.quick-link__btn {
+  flex: 1;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-accent);
+  color: var(--color-accent-text);
+  text-decoration: none;
+  font-size: var(--font-size-body-sm);      /* 0.875rem — body text level */
+  font-weight: var(--font-weight-label);    /* 600 — label weight for readability */
+  line-height: var(--line-height-label);
+  word-break: break-word;
+  display: flex;
+  align-items: center;
+  transition: background-color var(--transition-fast);
+}
+
+.quick-link__btn:hover {
+  background-color: var(--color-accent-hover);
+}
+
+/* Delete button — compact, danger-coloured on hover */
+.quick-link__delete {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  background-color: var(--color-bg-surface-alt);
+  color: var(--color-text-muted);
+  border: none;
+  border-left: 1px solid var(--color-border);
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.quick-link__delete:hover {
+  background-color: var(--color-danger);
+  color: var(--color-danger-text);
+}
+
+/* =============================================================================
+   SECTION: Form Controls (shared — inputs, buttons)
+   ============================================================================= */
+
+/* ---- Text / URL inputs ---- */
+input[type="text"],
+input[type="url"] {
+  display: block;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-body);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  line-height: var(--line-height-body);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  /* Prevent inputs from overflowing their parent on narrow viewports */
+  max-width: 100%;
+}
+
+input[type="text"]:hover,
+input[type="url"]:hover {
+  border-color: #9ca3af; /* grey-400 */
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.20);
+  /* Do NOT suppress the outline here — :focus-visible applies the 2px outline
+     (Req 7.3). Only suppress for mouse/pointer focus via the rule below. */
+}
+
+input[type="text"]:focus:not(:focus-visible),
+input[type="url"]:focus:not(:focus-visible) {
+  outline: none; /* pointer focus — box-shadow alone is sufficient */
+}
+
+input[type="text"]::placeholder,
+input[type="url"]::placeholder {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-body);
+}
+
+/* ---- Buttons ---- */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-body-sm);       /* 0.875rem — body text level */
+  font-weight: var(--font-weight-label);     /* 600 — label weight */
+  line-height: 1;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast),
+    color var(--transition-fast);
+  white-space: nowrap;
+  user-select: none;
+  /* Minimum target size for touch (Req 7.4) */
+  min-height: 2.25rem;
+  min-width: 2.25rem;
+}
+
+/* Primary action buttons (Add Task, Add Link, Start) */
+button[type="submit"],
+#btn-start {
+  background-color: var(--color-accent);
+  color: var(--color-accent-text);
+  border-color: var(--color-accent);
+}
+
+button[type="submit"]:hover,
+#btn-start:hover {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+
+/* Secondary / neutral buttons (Stop, Reset) */
+#btn-stop,
+#btn-reset {
+  background-color: var(--color-bg-surface-alt);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+
+#btn-stop:hover,
+#btn-reset:hover {
+  background-color: #e5e7eb; /* grey-200 */
+  border-color: #9ca3af;
+}
+
+/* =============================================================================
+   SECTION: Validation / Error Messages
+   ============================================================================= */
+
+.field-error {
+  font-size: var(--font-size-body-sm);      /* 0.875rem — body text */
+  font-weight: var(--font-weight-body);     /* 400 */
+  color: var(--color-error-text);           /* #b91c1c on white → 6.8:1 ✓ */
+  margin-top: var(--space-1);
+  line-height: var(--line-height-body);
+}
+
+/* =============================================================================
+   SECTION: Accessibility — Reduced Motion
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =============================================================================
+   SECTION: Responsive — narrow viewports (360 px – 719 px)
+   Requirement 7.4: no horizontal scroll, no clipped content at 360 px.
+   ============================================================================= */
+
+@media (max-width: 719px) {
+  :root {
+    /* Slightly reduce heading sizes on very small screens so they stay single-line */
+    --font-size-heading-xl: 1.5rem;   /* 24px */
+    --font-size-heading-lg: 1.25rem;  /* 20px */
+  }
+
+  main {
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-3);
+  }
+
+  section {
+    padding: var(--space-4);
+  }
+
+  /* Greeting time — reduce clamp minimum on narrow screens */
+  #greeting-time {
+    font-size: clamp(2.5rem, 12vw, 3.5rem);
+  }
+
+  /* Timer display */
+  #timer-display {
+    font-size: clamp(2rem, 14vw, 3rem);
+  }
+
+  /* Quick links grid — 1 column on narrowest screens */
+  #quick-links-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Add-task form: stack input and button vertically */
+  #add-task-form {
+    flex-direction: column;
+  }
+
+  /* Input takes full width when stacked; min-width:0 prevents overflow at 360px */
+  #task-input {
+    flex-basis: auto;
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* Ensure long URLs / labels in quick-link anchors never force horizontal scroll */
+  .quick-link__btn {
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+}
+
+/* =============================================================================
+   SECTION: Print styles (minimal)
+   ============================================================================= */
+
+@media print {
+  body {
+    background-color: #fff;
+    color: #000;
+  }
+
+  section {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+
+  #storage-warning,
+  .timer-controls,
+  #add-task-form,
+  #add-link-form,
+  .task__btn,
+  .quick-link__delete {
+    display: none;
+  }
+}

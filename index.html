@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Personal dashboard with greeting, focus timer, task list, and quick links." />
+    <title>Todo Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div id="storage-warning" role="alert" hidden>
+      <p>⚠️ Local storage is unavailable. Your data will not be saved this session.</p>
+      <button id="btn-dismiss-warning" aria-label="Dismiss storage warning">Dismiss</button>
+    </div>
+
+    <main>
+      <!-- Greeting Banner -->
+      <section id="greeting-banner" aria-live="polite">
+        <h1 id="greeting-text">Good Morning</h1>
+        <p id="greeting-time">HH:MM</p>
+        <p id="greeting-date">DayName, DD MonthName YYYY</p>
+      </section>
+
+      <!-- Focus Timer -->
+      <section id="focus-timer" aria-labelledby="focus-timer-heading">
+        <h2 id="focus-timer-heading">Focus Timer</h2>
+        <p id="timer-display" aria-live="polite" aria-atomic="true">25:00</p>
+        <div class="timer-controls">
+          <button id="btn-start" type="button">Start</button>
+          <button id="btn-stop" type="button">Stop</button>
+          <button id="btn-reset" type="button">Reset</button>
+        </div>
+      </section>
+
+      <!-- Task List -->
+      <section id="task-list-section" aria-labelledby="task-list-heading">
+        <h2 id="task-list-heading">Tasks</h2>
+        <form id="add-task-form" aria-label="Add new task">
+          <label for="task-input">New task</label>
+          <input
+            id="task-input"
+            type="text"
+            name="task"
+            placeholder="What do you need to do?"
+            maxlength="100"
+            autocomplete="off"
+          />
+          <button type="submit">Add Task</button>
+        </form>
+        <ul id="task-list" aria-label="Task list" aria-live="polite"></ul>
+      </section>
+
+      <!-- Quick Links Panel -->
+      <section id="quick-links-panel" aria-labelledby="quick-links-heading">
+        <h2 id="quick-links-heading">Quick Links</h2>
+        <form id="add-link-form" aria-label="Add new quick link">
+          <div class="form-field">
+            <label for="link-label-input">Label</label>
+            <input
+              id="link-label-input"
+              type="text"
+              name="label"
+              placeholder="Link label"
+              maxlength="100"
+              autocomplete="off"
+            />
+          </div>
+          <div class="form-field">
+            <label for="link-url-input">URL</label>
+            <input
+              id="link-url-input"
+              type="url"
+              name="url"
+              placeholder="https://example.com"
+              maxlength="2048"
+              autocomplete="off"
+            />
+          </div>
+          <button type="submit">Add Link</button>
+        </form>
+        <div id="quick-links-grid" aria-label="Quick links" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
